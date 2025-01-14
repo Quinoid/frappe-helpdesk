@@ -86,6 +86,7 @@ import { Dialog, FeatherIcon, Input } from "frappe-ui";
 export default {
   name: "AddNewAgentsDialog",
   props: ["show", "refreshkey"],
+  emits: ["close", "refresh"], // Explicitly declare the events
   components: {
     Dialog,
     Input,
@@ -182,8 +183,8 @@ export default {
             icon: "check",
             iconClasses: "text-green-500",
           });
-          "refreshkey" in this.$attrs && this.$attrs.refreshkey++;
           this.close();
+          this.$emit("refresh"); // Emit the refresh event
         },
         onError: (err) => {
           if (err.exc_type == "PaywallReachedError") {

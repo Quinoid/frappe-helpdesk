@@ -24,9 +24,10 @@
       @empty-state-action="isDialogVisible = true"
     />
     <AddNewAgentsDialog
-      :refreshkey="refreshkey"
       :show="isDialogVisible"
       @close="isDialogVisible = false"
+      @refresh="refreshList"
+
     />
   </div>
 </template>
@@ -40,6 +41,9 @@ const isDialogVisible = ref(false);
 const refreshkey = ref(0);
 // filter not on first field/ datetime
 // options mei route or click ka option
+function refreshList() {
+  refreshkey.value++; // Increment the key to refresh the ListViewBuilder
+}
 const options = computed(() => {
   return {
     doctype: "HD Agent",
