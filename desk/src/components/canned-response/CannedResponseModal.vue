@@ -41,6 +41,7 @@
             @change="(val) => (message = val)"
           />
         </div>
+        <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
       </div>
     </template>
   </Dialog>
@@ -48,7 +49,8 @@
 
 <script setup>
 import { TextEditor, call, TextInput } from "frappe-ui";
-
+import { watch } from "fs";
+import { ref } from "vue";
 const props = defineProps({
   name: {
     type: String,
@@ -66,8 +68,13 @@ const show = defineModel();
 const title = defineModel("title");
 const message = defineModel("message");
 const emit = defineEmits(["update"]);
+const error = ref("");
 
 async function updateItem() {
+  if (!title.value || title.value.trim() === "") {
+    error.value = "Title is mandatory";
+    return;
+  }
   if (props.name) {
     await call("frappe.client.set_value", {
       doctype: "HD Canned Response",
@@ -77,6 +84,7 @@ async function updateItem() {
         message: message.value,
       },
     });
+    error.value = "";
   } else {
     await call("frappe.client.insert", {
       doc: {
@@ -85,6 +93,7 @@ async function updateItem() {
         message: message.value,
       },
     });
+    error.value = "";
   }
   emit("update");
   show.value = false;

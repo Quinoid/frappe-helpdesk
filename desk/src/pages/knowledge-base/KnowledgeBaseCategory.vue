@@ -117,26 +117,26 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, toRef } from "vue";
-import { useRouter } from "vue-router";
+import { HCard } from "@/components";
+import EmptyMessage from "@/components/EmptyMessage.vue";
+import { useError } from "@/composables/error";
+import { AGENT_PORTAL_KNOWLEDGE_BASE_SUB_CATEGORY } from "@/router";
+import { createToast } from "@/utils";
 import {
-  createResource,
+  Button,
   createDocumentResource,
+  createResource,
   debounce,
-  Button as Button,
   Dialog,
   FormControl,
 } from "frappe-ui";
 import { isEmpty } from "lodash";
-import { AGENT_PORTAL_KNOWLEDGE_BASE_SUB_CATEGORY } from "@/router";
-import { createToast } from "@/utils";
-import { useError } from "@/composables/error";
-import { HCard } from "@/components";
-import KnowledgeBaseCategoryHeader from "./KnowledgeBaseCategoryHeader.vue";
-import KnowledgeBaseIconSelector from "./KnowledgeBaseIconSelector.vue";
-import EmptyMessage from "@/components/EmptyMessage.vue";
+import { ref, toRef } from "vue";
+import { useRouter } from "vue-router";
 import IconEdit from "~icons/lucide/edit-3";
 import IconPlus from "~icons/lucide/plus";
+import KnowledgeBaseCategoryHeader from "./KnowledgeBaseCategoryHeader.vue";
+import KnowledgeBaseIconSelector from "./KnowledgeBaseIconSelector.vue";
 
 const props = defineProps({
   categoryId: {
@@ -171,15 +171,20 @@ const category = createDocumentResource({
   },
 });
 
-const saveCategory = debounce(
-  () =>
-    category.setValue.submit({
+const saveCategory = debounce(() => {
+  category.setValue
+    .submit({
       category_name: newCategoryName.value || category.doc.category_name,
       description: newCategoryDescription.value || category.doc.description,
       icon: newCategoryIcon.value || category.doc.icon,
-    }),
-  500
-);
+    })
+    .then(() => {
+      showEdit.value = false; // Close popup
+    })
+    .catch((error) => {
+      console.error("Error saving subcategory:", error);
+    });
+}, 500);
 
 const newSubCategory = createResource({
   url: "frappe.client.insert",

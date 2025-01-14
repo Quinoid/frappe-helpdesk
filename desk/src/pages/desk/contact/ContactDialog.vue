@@ -5,47 +5,25 @@
         <div class="text-xl font-medium text-gray-900">
           {{ contact.doc?.name }}
         </div>
-        <Avatar
-          size="2xl"
-          :label="contact.doc?.name"
-          :image="contact.doc?.image"
-          class="cursor-pointer hover:opacity-80"
-        />
+        <Avatar size="2xl" :label="contact.doc?.name" :image="contact.doc?.image"
+          class="cursor-pointer hover:opacity-80" />
         <div class="flex gap-2">
-          <FileUploader
-            :validate-file="validateFile"
-            @success="(file:File) => updateImage(file)"
-          >
+          <FileUploader :validate-file="validateFile" @success="(file: File) => updateImage(file)">
             <template #default="{ uploading, openFileSelector }">
-              <Button
-                :label="contact.doc?.image ? 'Change photo' : 'Upload photo'"
-                :loading="uploading"
-                @click="openFileSelector"
-              />
+              <Button :label="contact.doc?.image ? 'Change photo' : 'Upload photo'" :loading="uploading"
+                @click="openFileSelector" />
             </template>
           </FileUploader>
-          <Button
-            v-if="contact.doc?.image"
-            label="Remove photo"
-            @click="updateImage(null)"
-          />
+          <Button v-if="contact.doc?.image" label="Remove photo" @click="updateImage(null)" />
         </div>
         <div class="w-full space-y-2 text-sm text-gray-700">
           <div class="space-y-1">
             <div class="text-xs">Emails</div>
-            <MultiSelect
-              v-model:items="emails"
-              placeholder="john.doe@example.com"
-              :validate="validateEmail"
-            />
+            <MultiSelect v-model:items="emails" placeholder="john.doe@example.com" :validate="validateEmail" />
           </div>
           <div class="space-y-1">
             <div class="text-xs">Phone Nos</div>
-            <MultiSelect
-              v-model:items="phones"
-              placeholder="+91 98765 43210"
-              :validate="validatePhone"
-            />
+            <MultiSelect v-model:items="phones" placeholder="+91 98765 43210" :validate="validatePhone" />
           </div>
         </div>
       </div>
@@ -54,19 +32,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import type { Ref } from "vue";
+import MultiSelect from "@/components/MultiSelect.vue";
+import { useError } from "@/composables/error";
+import { AutoCompleteItem, File } from "@/types";
+import { createToast } from "@/utils";
 import {
-  createDocumentResource,
   Avatar,
+  createDocumentResource,
   Dialog,
   FileUploader,
 } from "frappe-ui";
+import type { Ref } from "vue";
+import { computed, ref } from "vue";
 import zod from "zod";
-import { createToast } from "@/utils";
-import { useError } from "@/composables/error";
-import MultiSelect from "@/components/MultiSelect.vue";
-import { File, AutoCompleteItem } from "@/types";
 
 interface Props {
   name: {
@@ -111,12 +89,29 @@ const emails = computed({
       });
       return;
     }
+    const oldEmails =
+      contact.doc.email_ids.map((item: any) => item.email_id) ?? [];
     if (newVal.length !== contact.doc.email_ids.length) {
       isDirty.value = true;
     }
-    contact.doc.email_ids = newVal.map((email: AutoCompleteItem) => ({
-      email_id: email.value,
-    }));
+    let validate = true;
+    newVal.forEach((item: AutoCompleteItem, index: number) => {
+      const oldValue = oldEmails[index];
+      if (item.value === oldValue) {
+        createToast({
+          title: "Duplicate Email",
+          icon: "x",
+          iconClasses: "text-red-600",
+        });
+        validate = false;
+      }
+    });
+
+    if (validate) {
+      contact.doc.email_ids = newVal.map((email: AutoCompleteItem) => ({
+        email_id: email.value,
+      }));
+    }
   },
 });
 
@@ -129,12 +124,29 @@ const phones = computed({
     }));
   },
   set(newVal) {
-    if (newVal.length !== contact.doc.phone_nos.length) {
+    const oldPhoneNos =
+      contact.doc.phone_nos.map((item: any) => item.phone) ?? [];
+
+    if (newVal.length !== oldPhoneNos.length) {
       isDirty.value = true;
     }
-    contact.doc.phone_nos = newVal.map((item: AutoCompleteItem) => ({
-      phone: item.value,
-    }));
+    let validate = true;
+    newVal.forEach((item: AutoCompleteItem, index: number) => {
+      const oldValue = oldPhoneNos[index];
+      if (item.value === oldValue) {
+        createToast({
+          title: "Duplicate phone number",
+          icon: "x",
+          iconClasses: "text-red-600",
+        });
+        validate = false
+      }
+    });
+    if (validate) {
+      contact.doc.phone_nos = newVal.map((item: AutoCompleteItem) => ({
+        phone: item.value,
+      }));
+    }
   },
 });
 

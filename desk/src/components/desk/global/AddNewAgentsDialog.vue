@@ -80,12 +80,12 @@
 </template>
 
 <script>
-import { Dialog, Input, FeatherIcon } from "frappe-ui";
 import { ref } from "@vue/reactivity";
+import { Dialog, FeatherIcon, Input } from "frappe-ui";
 
 export default {
   name: "AddNewAgentsDialog",
-  props: ["show"],
+  props: ["show", "refreshkey"],
   components: {
     Dialog,
     Input,
@@ -182,7 +182,7 @@ export default {
             icon: "check",
             iconClasses: "text-green-500",
           });
-
+          "refreshkey" in this.$attrs && this.$attrs.refreshkey++;
           this.close();
         },
         onError: (err) => {

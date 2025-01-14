@@ -40,13 +40,11 @@
           <div class="space-y-4">
             <FormControl
               v-model="newSubCategoryName"
-              :placeholder="subCategory.doc.category_name"
               label="Name"
               type="text"
             />
             <FormControl
               v-model="newSubCategoryDescription"
-              :placeholder="subCategory.doc.description"
               label="Description"
               type="textarea"
             />
@@ -64,23 +62,24 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, h } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import ListViewBuilder from "@/components/ListViewBuilder.vue";
+import { useError } from "@/composables/error";
+import { AGENT_PORTAL_KNOWLEDGE_BASE_ARTICLE } from "@/router";
 import { useUserStore } from "@/stores/user";
 import {
+  Avatar,
+  Button,
   createDocumentResource,
   debounce,
-  Button,
   Dialog,
   FormControl,
-  Avatar,
 } from "frappe-ui";
-import { AGENT_PORTAL_KNOWLEDGE_BASE_ARTICLE } from "@/router";
-import { useError } from "@/composables/error";
-import KnowledgeBaseCategoryHeader from "./KnowledgeBaseCategoryHeader.vue";
+import { h, ref, watchEffect } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import IconEdit from "~icons/lucide/edit-3";
 import IconPlus from "~icons/lucide/plus";
-import ListViewBuilder from "@/components/ListViewBuilder.vue";
+import { createToast } from "../../utils";
+import KnowledgeBaseCategoryHeader from "./KnowledgeBaseCategoryHeader.vue";
 const { getUser } = useUserStore();
 const props = defineProps({
   subCategoryId: {
@@ -104,15 +103,30 @@ const subCategory = createDocumentResource({
   },
 });
 
-const saveSubCategory = debounce(
-  () =>
-    subCategory.setValue.submit({
+const saveSubCategory = debounce(() => {
+  subCategory.setValue
+    .submit({
       category_name: newSubCategoryName.value || subCategory.doc.category_name,
       description:
         newSubCategoryDescription.value || subCategory.doc.description,
-    }),
-  500
-);
+    })
+    .then(() => {
+      createToast({
+        title: " Updated successfully",
+        icon: "check",
+        iconClasses: "text-green-500",
+      });
+      showEdit.value = false; // Close popup
+    })
+    .catch((error) => {
+      console.error("Error saving subcategory:", error);
+    });
+}, 500);
+
+watchEffect(() => {
+  newSubCategoryName.value = subCategory.doc?.category_name || "";
+  newSubCategoryDescription.value = subCategory.doc?.description || "";
+});
 
 const options = {
   doctype: "HD Article",

@@ -19,10 +19,12 @@
     </LayoutHeader>
 
     <ListViewBuilder
+      :key="refreshkey"
       :options="options"
       @empty-state-action="isDialogVisible = true"
     />
     <AddNewAgentsDialog
+      :refreshkey="refreshkey"
       :show="isDialogVisible"
       @close="isDialogVisible = false"
     />
@@ -35,7 +37,7 @@ import AddNewAgentsDialog from "@/components/desk/global/AddNewAgentsDialog.vue"
 import { LayoutHeader, ListViewBuilder } from "@/components";
 
 const isDialogVisible = ref(false);
-
+const refreshkey = ref(0);
 // filter not on first field/ datetime
 // options mei route or click ka option
 const options = computed(() => {
