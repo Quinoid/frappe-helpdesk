@@ -50,14 +50,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import { useStorage } from "@vueuse/core";
-import { createResource, Breadcrumbs, usePageMeta } from "frappe-ui";
+import { LayoutHeader, ViewControls } from "@/components";
 import { TicketsListView } from "@/components/ticket";
-import { ViewControls, LayoutHeader } from "@/components";
-import { useUserStore } from "@/stores/user";
-import { useRoute } from "vue-router";
 import { socket } from "@/socket";
+import { useUserStore } from "@/stores/user";
+import { useStorage } from "@vueuse/core";
+import { Breadcrumbs, createResource, usePageMeta } from "frappe-ui";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useRoute } from "vue-router";
 const { getUser } = useUserStore();
 
 const route = useRoute();
@@ -248,7 +248,7 @@ function processSorts(sortEvent) {
   apply();
 }
 
-function processFilters(filterEvent) {
+function processFilters(filterEvent = null) {
   if (filterEvent.event === "add") {
     let idx = filters.value.findIndex(
       (filter) => filter.field.fieldname === filterEvent.data.field.fieldname
@@ -311,8 +311,8 @@ function apply() {
       filters: filtersToApply,
       page_length: pageLengthCount,
       doctype: "HD Ticket",
-      columns: columns.length ? columns : undefined,
-      rows: rows.length ? rows : undefined,
+      columns: columns?.length ? columns : undefined,
+      rows: rows?.length ? rows : undefined,
       show_customer_portal_fields: isCustomerPortal,
     },
   });

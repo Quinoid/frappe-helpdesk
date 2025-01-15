@@ -92,28 +92,27 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { capture } from "@/telemetry";
-import {
-  createResource,
-  createDocumentResource,
-  debounce,
-  Button,
-  TextEditor,
-  TextEditorFixedMenu,
-  Breadcrumbs,
-} from "frappe-ui";
+import { LayoutHeader } from "@/components";
+import { useError } from "@/composables/error";
 import {
   AGENT_PORTAL_KNOWLEDGE_BASE_ARTICLE,
   AGENT_PORTAL_KNOWLEDGE_BASE_CATEGORY,
   AGENT_PORTAL_KNOWLEDGE_BASE_SUB_CATEGORY,
   CUSTOMER_PORTAL_NEW_TICKET,
 } from "@/router";
-import { createToast } from "@/utils";
 import { useAuthStore } from "@/stores/auth";
-import { useError } from "@/composables/error";
-import { LayoutHeader } from "@/components";
+import { capture } from "@/telemetry";
+import { createToast } from "@/utils";
+import {
+  Breadcrumbs,
+  createDocumentResource,
+  createResource,
+  debounce,
+  TextEditor,
+  TextEditorFixedMenu
+} from "frappe-ui";
+import { computed, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import KnowledgeBaseArticleActionsEdit from "./knowledge-base/KnowledgeBaseArticleActionsEdit.vue";
 import KnowledgeBaseArticleActionsNew from "./knowledge-base/KnowledgeBaseArticleActionsNew.vue";
 import KnowledgeBaseArticleActionsView from "./knowledge-base/KnowledgeBaseArticleActionsView.vue";
@@ -121,14 +120,14 @@ import KnowledgeBaseArticleTopEdit from "./knowledge-base/KnowledgeBaseArticleTo
 import KnowledgeBaseArticleTopNew from "./knowledge-base/KnowledgeBaseArticleTopNew.vue";
 import KnowledgeBaseArticleTopView from "./knowledge-base/KnowledgeBaseArticleTopView.vue";
 
+import {
+  ThumbsDownFilledIcon,
+  ThumbsDownIcon,
+  ThumbsUpFilledIcon,
+  ThumbsUpIcon,
+} from "@/components/icons";
 import { PreserveIds } from "@/tiptap-extensions";
 import { FeedbackAction } from "@/types";
-import {
-  ThumbsUpIcon,
-  ThumbsUpFilledIcon,
-  ThumbsDownIcon,
-  ThumbsDownFilledIcon,
-} from "@/components/icons";
 const props = defineProps({
   articleId: {
     type: String,
@@ -171,7 +170,7 @@ const breadcrumbs = computed(() => {
         params: { categoryId: options__.value.categoryId },
       },
     },
-  ];
+  ];  
 
   agentPortalItems.push({
     label: options__.value.subCategoryName,
@@ -342,16 +341,12 @@ const insertRes = createResource({
     if (!params.doc.content) throw "Content is required";
   },
   onSuccess(data) {
-    router.push({
-      name: AGENT_PORTAL_KNOWLEDGE_BASE_ARTICLE,
-      params: {
-        articleId: data.name,
-      },
-      query: {
-        category: categoryId.value,
-        subCategory: subCategoryId.value,
-      },
+    createToast({
+      title: "Article Created",
+      icon: "check",
+      iconClasses: "text-green-500",
     });
+    router.replace(backTo.value);
   },
   onError: useError({ title: "Error creating article" }),
 });
@@ -359,7 +354,7 @@ const insertRes = createResource({
 const setValueRes = createResource({
   url: "frappe.client.set_value",
   onSuccess() {
-    article.reload();
+    router.replace(backTo.value);
     createToast({
       title: "Article updated",
       icon: "check",

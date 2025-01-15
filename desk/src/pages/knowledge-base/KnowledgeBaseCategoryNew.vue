@@ -33,8 +33,8 @@
 </template>
 
 <script setup lang="ts">
+import { Button, createResource, Dialog, FormControl } from "frappe-ui";
 import { ref, useAttrs } from "vue";
-import { createResource, Button, Dialog, FormControl } from "frappe-ui";
 import KnowledgeBaseIconSelector from "./KnowledgeBaseIconSelector.vue";
 
 interface E {
@@ -68,7 +68,7 @@ const newCategoryRes = createResource({
   validate(params) {
     const requiredFields = ["category_name", "description", "icon"];
     for (const f of requiredFields) {
-      if (params.doc[f]) return;
+      if (params.doc[f].trim()) return;
       const field = f.replace("_", " ").toUpperCase();
       return `${field} is required`;
     }

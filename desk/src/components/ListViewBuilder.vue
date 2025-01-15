@@ -100,26 +100,26 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, provide, computed } from "vue";
 import {
+  Badge,
   createResource,
-  ListView,
   ListFooter,
-  ListRowItem,
-  ListRows,
-  ListRow,
   ListHeader,
   ListHeaderItem,
-  Badge,
+  ListRow,
+  ListRowItem,
+  ListRows,
+  ListView,
 } from "frappe-ui";
+import { computed, provide, reactive } from "vue";
 
-import { Filter, SortBy, QuickFilters } from "@/components/view-controls";
+import { Filter, QuickFilters, SortBy } from "@/components/view-controls";
+import { useScreenSize } from "@/composables/screen";
 import { dayjs } from "@/dayjs";
+import { BadgeStatus } from "@/types";
+import EmptyState from "./EmptyState.vue";
 import FadedScrollableDiv from "./FadedScrollableDiv.vue";
 import Reload from "./view-controls/Reload.vue";
-import { useScreenSize } from "@/composables/screen";
-import EmptyState from "./EmptyState.vue";
-import { BadgeStatus } from "@/types";
 
 interface P {
   options: {

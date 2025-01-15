@@ -111,6 +111,8 @@ const saveSubCategory = debounce(() => {
         newSubCategoryDescription.value || subCategory.doc.description,
     })
     .then(() => {
+      newSubCategoryName.value = "";
+      newSubCategoryDescription.value = "";
       createToast({
         title: " Updated successfully",
         icon: "check",
