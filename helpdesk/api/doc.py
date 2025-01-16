@@ -92,25 +92,25 @@ def get_filterable_fields(doctype: str, show_customer_portal_fields=False):
     # TODO: Ritvik => till a better way we have for custom fields, just show custom fields
 
     res.extend(from_custom_fields)
-    if not show_customer_portal_fields:
-        res.append(
-            {
-                "fieldname": "_assign",
-                "fieldtype": "Link",
-                "label": "Assigned to",
-                "name": "_assign",
-                "options": "HD Agent",
-            }
-        )
+    # if not show_customer_portal_fields:
+    #     res.append(
+    #         {
+    #             "fieldname": "_assign",
+    #             "fieldtype": "Link",
+    #             "label": "Assigned to",
+    #             "name": "_assign",
+    #             "options": "HD Agent",
+    #         }
+    #     )
 
-    res.append(
-        {
-            "fieldname": "name",
-            "fieldtype": "Data",
-            "label": "ID",
-            "name": "name",
-        },
-    )
+    # res.append(
+    #     {
+    #         "fieldname": "name",
+    #         "fieldtype": "Data",
+    #         "label": "ID",
+    #         "name": "name",
+    #     },
+    # )
 
     return res
 
@@ -185,7 +185,7 @@ def get_list_data(
             doctype,
             fields=rows,
             filters=filters,
-            order_by=f"`tab{doctype}`.modified_by {order_by.split(' ')[-1]}",
+            order_by=order_by,
             page_length=page_length,
         )
         or []
@@ -252,12 +252,28 @@ def sort_options(doctype: str, show_customer_portal_fields=False):
     if show_customer_portal_fields:
         fields = get_customer_portal_fields(doctype, fields)
 
+    # if doctype == 'HD Agent' or doctype == 'HD Team' or doctype == 'HD Ticket' or doctype == 'HD Customer' or doctype == 'Contact':
+    #     standard_fields = [
+    #         {"label": "Name", "value": "name"},
+    #         {"label": "Created On", "value": "creation"},
+    #         # {"label": "Last Modified", "value": "modified"}
+    #     ]
+    # else:
+
+    #     standard_fields = [
+    #         {"label": "Name", "value": "name"},
+    #         {"label": "Created On", "value": "creation"},
+    #         # {"label": "Last Modified", "value": "modified"},
+    #         # {"label": "Modified By", "value": "modified_by"},
+    #         # {"label": "Owner", "value": "owner"},
+    #     ]
+
     standard_fields = [
         {"label": "Name", "value": "name"},
         {"label": "Created On", "value": "creation"},
         {"label": "Last Modified", "value": "modified"},
-        {"label": "Modified By", "value": "modified_by"},
-        {"label": "Owner", "value": "owner"},
+        # {"label": "Modified By", "value": "modified_by"},
+        # {"label": "Owner", "value": "owner"},
     ]
 
     fields.extend(standard_fields)
@@ -272,12 +288,12 @@ def get_quick_filters(doctype: str):
     quick_filters = []
     name_filter = {"label": "ID", "name": "name", "type": "Data"}
 
-    if doctype == "Contact":
-        quick_filters.append(name_filter)
-        return quick_filters
+    # if doctype == "Contact":
+    #     quick_filters.append(name_filter)
+    #     return quick_filters
 
-    if doctype == "HD Agent" or doctype == "HD Customer":
-        quick_filters.append(name_filter)
+    # if doctype == "HD Agent" or doctype == "HD Customer":
+    #     quick_filters.append(name_filter)
 
     for field in fields:
         if field.fieldtype == "Select":
