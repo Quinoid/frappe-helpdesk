@@ -126,20 +126,27 @@ const phones = computed({
   set(newVal) {
     const oldPhoneNos =
       contact.doc.phone_nos.map((item: any) => item.phone) ?? [];
-
     if (newVal.length !== oldPhoneNos.length) {
       isDirty.value = true;
     }
     let validate = true;
-    newVal.forEach((item: AutoCompleteItem, index: number) => {
-      const oldValue = oldPhoneNos[index];
-      if (item.value === oldValue) {
-        createToast({
-          title: "Duplicate phone number",
-          icon: "x",
-          iconClasses: "text-red-600",
-        });
-        validate = false
+    console.log(oldPhoneNos, newVal);
+    newVal.forEach((item: AutoCompleteItem) => {
+      if (oldPhoneNos.includes(item.value)) {
+        const duplicateCount = newVal.filter(
+          (newItem) => newItem.value === item.value
+        ).length;
+        const oldCount = oldPhoneNos.filter(
+          (oldItem) => oldItem === item.value
+        ).length;
+         if (duplicateCount > oldCount) {
+          createToast({
+            title: "Duplicate phone number",
+            icon: "x",
+            iconClasses: "text-red-600",
+          });
+          validate = false;
+        }
       }
     });
     if (validate) {

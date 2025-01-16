@@ -4,9 +4,9 @@
     :class="{
       'w-full': isExpanded,
       'w-8': !isExpanded,
-      'shadow-sm': isActive,
-      [bgColor]: isActive,
-      [hvColor]: !isActive,
+      'shadow-sm': isActive || active,
+      [bgColor]: isActive || active,
+      [hvColor]: !isActive && !active,
     }"
     @click="handleNavigation"
   >
@@ -34,8 +34,9 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";
+import { computed } from "vue";
+import { useRouter } from "vue-router";
 
 interface P {
   icon: unknown;
@@ -65,4 +66,11 @@ function handleNavigation() {
     name: props.to,
   });
 }
+const active = computed(() => {
+  return (
+    router.currentRoute.value.name === props.to ||
+    `${String(router.currentRoute.value.name)}s` === props.to
+  );
+});
+console.log(active.value, router.currentRoute.value.name, props.to);
 </script>

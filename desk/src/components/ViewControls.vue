@@ -21,12 +21,12 @@
         @event:sort="(e) => emitToParent(e, 'event:sort')"
         :hide-label="isMobileView"
       />
-      <ColumnSettings
+      <!-- <ColumnSettings
         :fields="column.fields"
         :columns="column.columns"
         @event:column="(e) => emitToParent(e, 'event:column')"
         :hide-label="isMobileView"
-      />
+      /> -->
     </div>
   </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 pb-4 pt-3">

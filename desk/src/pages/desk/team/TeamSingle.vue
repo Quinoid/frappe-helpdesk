@@ -242,6 +242,7 @@ function renameTeam() {
         return "New and old title cannot be same";
     },
     onSuccess() {
+      showRename.value = false;
       router.replace({
         name: AGENT_PORTAL_TEAM_SINGLE,
         params: {

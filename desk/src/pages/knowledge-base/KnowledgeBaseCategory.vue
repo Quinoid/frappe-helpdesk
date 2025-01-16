@@ -172,6 +172,14 @@ const category = createDocumentResource({
 });
 
 const saveCategory = debounce(() => {
+  if (isEmpty(newCategoryName.value) || newCategoryName.value.trim()) {
+    createToast({
+      title: "Category name is required",
+      icon: "x",
+      iconClasses: "text-red-600",
+    });
+    return;
+  }
   category.setValue
     .submit({
       category_name: newCategoryName.value || category.doc.category_name,
@@ -180,6 +188,8 @@ const saveCategory = debounce(() => {
     })
     .then(() => {
       showEdit.value = false; // Close popup
+      newCategoryDescription.value = "";
+      newCategoryName.value = "";
     })
     .catch((error) => {
       console.error("Error saving subcategory:", error);
@@ -200,12 +210,14 @@ const newSubCategory = createResource({
     };
   },
   validate(params) {
-    if (isEmpty(params.doc.category_name)) {
+    if (isEmpty(params.doc.category_name) || params.doc.category_name.trim()) {
       return "Category name is required";
     }
   },
   onSuccess() {
     showNewSubCategory.value = false;
+    newSubCategoryName.value = "";
+    newSubCategoryDescription.value = "";
     subCategories.reload();
   },
   onError: useError({ title: "Error creating sub category" }),
