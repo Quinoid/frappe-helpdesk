@@ -179,6 +179,12 @@ class HDTeam(Document):
                 "type": "Data",
             },
             {
+                "label": "Ignore Restrictions",
+                "key": "ignore_restrictions",
+                "width": "24rem",
+                "type": "Data",
+            },
+            {
                 "label": "Created On",
                 "key": "creation",
                 "width": "8rem",
