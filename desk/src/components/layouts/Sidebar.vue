@@ -68,22 +68,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, markRaw, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
+import { SidebarLink } from "@/components";
+import Apps from "@/components/Apps.vue";
+import SettingsModal from "@/components/Settings/SettingsModal.vue";
+import UserMenu from "@/components/UserMenu.vue";
+import { useDevice } from "@/composables";
+import { CUSTOMER_PORTAL_LANDING } from "@/router";
 import { useAuthStore } from "@/stores/auth";
 import { useNotificationStore } from "@/stores/notification";
 import { useSidebarStore } from "@/stores/sidebar";
-import { CUSTOMER_PORTAL_LANDING, CUSTOMER_PORTAL_ROUTES } from "@/router";
-import { useDevice } from "@/composables";
-import { SidebarLink } from "@/components";
-import UserMenu from "@/components/UserMenu.vue";
+import { storeToRefs } from "pinia";
+import { computed, markRaw, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import LucideArrowLeftFromLine from "~icons/lucide/arrow-left-from-line";
 import LucideArrowRightFromLine from "~icons/lucide/arrow-right-from-line";
 import LucideBell from "~icons/lucide/bell";
 import LucideSearch from "~icons/lucide/search";
-import SettingsModal from "@/components/Settings/SettingsModal.vue";
-import Apps from "@/components/Apps.vue";
 import {
   agentPortalSidebarOptions,
   customerPortalSidebarOptions,
@@ -154,6 +154,7 @@ const profileSettings = computed(() => {
 });
 
 function isActiveTab(to: string) {
+  console.log(route.name, to);
   return route.name === to;
 }
 

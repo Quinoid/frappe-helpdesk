@@ -35,7 +35,7 @@
           <FormControl
             v-model="newTeamTitle"
             label="Title"
-            placeholder="Product experts"
+            placeholder="Team name"
             type="text"
           />
           <Button
@@ -63,7 +63,9 @@ const router = useRouter();
 const showNewDialog = ref(false);
 const newTeamTitle = ref(null);
 const emptyMessage = "No Teams Found";
-
+function removeHTMLContent(input) {
+  return input.replace(/<\/?[^>]+(>|$)/g, "");
+}
 const newTeam = createResource({
   url: "frappe.client.insert",
   makeParams() {
@@ -88,7 +90,7 @@ const newTeam = createResource({
   },
   onError: (err) => {
     createToast({
-      title: err.messages[0],
+      title: removeHTMLContent(err.messages[0]),
       icon: "x",
       iconClasses: "text-red-600",
     });

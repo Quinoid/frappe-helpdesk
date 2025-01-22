@@ -96,7 +96,8 @@ const tickets = createResource({
   params: {
     doctype: "HD Ticket",
     filters: filtersToApply,
-    order_by: sortsToApply,
+    order_by:
+      sortsToApply && sortsToApply !== "" ? sortsToApply : "modified desc",
     page_length: pageLength.value,
     columns: columns.length ? columns : undefined,
     rows: rows.length ? rows : undefined,

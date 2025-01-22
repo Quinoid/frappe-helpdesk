@@ -37,9 +37,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
-import { Input, Dialog, createResource } from "frappe-ui";
 import { createToast } from "@/utils";
+import { Dialog, Input, createResource } from "frappe-ui";
+import { reactive } from "vue";
 
 const emit = defineEmits(["customerCreated"]);
 const model = defineModel<boolean>();
@@ -48,6 +48,9 @@ const state = reactive({
   customer: "",
   domain: "",
 });
+function removeHTMLContent(input) {
+  return input.replace(/<\/?[^>]+(>|$)/g, "");
+}
 
 const customerResource = createResource({
   url: "frappe.client.insert",
@@ -71,7 +74,7 @@ const customerResource = createResource({
   },
   onError: (err) => {
     createToast({
-      title: err.messages[0],
+      title: removeHTMLContent(err.messages[0]),
       icon: "x",
       iconClasses: "text-red-600",
     });

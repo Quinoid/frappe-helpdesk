@@ -72,5 +72,4 @@ const active = computed(() => {
     `${String(router.currentRoute.value.name)}s` === props.to
   );
 });
-console.log(active.value, router.currentRoute.value.name, props.to);
 </script>

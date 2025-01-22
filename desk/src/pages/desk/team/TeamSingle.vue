@@ -130,28 +130,28 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
+import LayoutHeader from "@/components/LayoutHeader.vue";
+import Pill from "@/components/Pill.vue";
+import { useError } from "@/composables/error";
+import { AGENT_PORTAL_TEAM_LIST, AGENT_PORTAL_TEAM_SINGLE } from "@/router";
+import { useAgentStore } from "@/stores/agent";
+import { createToast } from "@/utils";
 import {
+  Avatar,
+  Breadcrumbs,
+  Button,
   createDocumentResource,
   createResource,
-  Avatar,
-  Button,
   Dialog,
   Dropdown,
   FormControl,
   Switch,
-  Breadcrumbs,
 } from "frappe-ui";
 import { isEmpty } from "lodash";
-import { AGENT_PORTAL_TEAM_LIST, AGENT_PORTAL_TEAM_SINGLE } from "@/router";
-import { useAgentStore } from "@/stores/agent";
-import { useError } from "@/composables/error";
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 import IconMoreHorizontal from "~icons/lucide/more-horizontal";
 import IconPlus from "~icons/lucide/plus";
-import Pill from "@/components/Pill.vue";
-import LayoutHeader from "@/components/LayoutHeader.vue";
-
 const props = defineProps({
   teamId: {
     type: String,
@@ -225,7 +225,9 @@ const deleteDialogOptions = {
     },
   ],
 };
-
+function removeHTMLContent(input) {
+  return input.replace(/<\/?[^>]+(>|$)/g, "");
+}
 function renameTeam() {
   const r = createResource({
     url: "frappe.client.rename_doc",
@@ -250,7 +252,13 @@ function renameTeam() {
         },
       });
     },
-    onError: useError({ title: "Error renaming team" }),
+    onError: (err) => {
+      createToast({
+        title: removeHTMLContent(err.messages[0]),
+        icon: "x",
+        iconClasses: "text-red-600",
+      });
+    },
   });
 
   r.submit();
