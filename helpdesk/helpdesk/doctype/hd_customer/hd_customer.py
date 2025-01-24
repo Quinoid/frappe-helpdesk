@@ -22,6 +22,12 @@ class HDCustomer(Document):
                 "type": "Data",
             },
             {
+                "label": "Image",
+                "key": "image",
+                "width": "24rem",
+                "type": "Data",
+            },
+            {
                 "label": "Created On",
                 "key": "creation",
                 "width": "8rem",
