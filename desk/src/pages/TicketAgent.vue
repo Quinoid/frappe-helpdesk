@@ -46,17 +46,32 @@
     <div v-if="ticket.data" class="flex h-full overflow-hidden">
       <div class="flex flex-1 flex-col">
         <!-- ticket activities -->
-        <div class="overflow-y-auto flex-1">
-          <Tabs
-            v-model="tabIndex"
+         <div  class="flex-1 overflow-y-auto"> 
+          <!-- <Tabs
             v-slot="{ tab }"
+            v-model="tabIndex"
             :tabs="tabs"
             class="!h-full"
-          >
-            <TicketAgentActivities
-              ref="ticketAgentActivitiesRef"
-              :activities="filterActivities(tab.name)"
-              :title="tab.label"
+          > -->
+        <div class="flex ml-3 overflow-y-auto border-b sticky top-0 border-gray-200">
+            <div
+              v-for="tab in tabs"
+              :key="tab.name"
+              @click="tabIndex = tab"
+              class="cursor-pointer text-sm px-2 py-2   text-gray-500 hover:text-black hover:border-black transition-colors border-b-2"
+              :class="{
+                '!text-black !border-black': tabIndex.name === tab.name,
+                '!text-gray-500 !border-transparent': tabIndex.name !== tab.name
+              }"
+            >
+              {{ tab.label }}
+            </div>
+        </div>
+
+          <TicketAgentActivities
+            ref="ticketAgentActivitiesRef"
+            :activities="filterActivities(tabIndex.name)"
+            :title="tabIndex.label"
               @update="
                 () => {
                   ticket.reload();
@@ -67,8 +82,8 @@
                   communicationAreaRef.replyToEmail(e);
                 }
               "
-            />
-          </Tabs>
+            />  
+          <!-- </Tabs> -->
         </div>
         <CommunicationArea
           ref="communicationAreaRef"
@@ -126,35 +141,33 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, h, watch, onMounted, onUnmounted, provide } from "vue";
 import { useStorage } from "@vueuse/core";
 import {
   Breadcrumbs,
-  Dropdown,
   createResource,
   Dialog,
-  FormControl,
-  Tabs,
+  Dropdown,
+  FormControl
 } from "frappe-ui";
+import { computed, h, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import {
-  LayoutHeader,
-  MultipleAvatar,
   AssignmentModal,
   CommunicationArea,
+  LayoutHeader,
+  MultipleAvatar,
 } from "@/components";
-import { TicketAgentActivities, TicketAgentSidebar } from "@/components/ticket";
 import {
-  IndicatorIcon,
-  CommentIcon,
   ActivityIcon,
+  CommentIcon,
   EmailIcon,
+  IndicatorIcon,
 } from "@/components/icons";
-import { socket } from "@/socket";
+import { TicketAgentActivities } from "@/components/ticket";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { useUserStore } from "@/stores/user";
+import { TabObject } from "@/types";
 import { createToast, setupCustomActions } from "@/utils";
-import { TabObject, TicketTab } from "@/types";
 
 const ticketStatusStore = useTicketStatusStore();
 const { getUser } = useUserStore();
@@ -211,6 +224,7 @@ const ticket = createResource({
     });
   },
 });
+
 function updateField(name, value, callback = () => {}) {
   updateTicket(name, value);
   callback();
@@ -252,7 +266,7 @@ const dropdownOptions = computed(() =>
   }))
 );
 
-const tabIndex = ref(0);
+const tabIndex = ref({ name: "activity", label: "Activity" });
 const tabs: TabObject[] = [
   {
     name: "activity",
@@ -272,7 +286,7 @@ const tabs: TabObject[] = [
 ];
 
 const activities = computed(() => {
-  const emailProps = ticket.data.communications.map((email) => {
+  const emailProps = ticket?.data?.communications?.map((email) => {
     return {
       subject: email.subject,
       content: email.content,
@@ -287,7 +301,7 @@ const activities = computed(() => {
     };
   });
 
-  const commentProps = ticket.data.comments.map((comment) => {
+  const commentProps = ticket?.data?.comments?.map((comment) => {
     return {
       name: comment.name,
       type: "comment",
@@ -305,7 +319,8 @@ const activities = computed(() => {
     );
   }
 
-  const historyProps = [...ticket.data.history, ...ticket.data.views].map(
+  // eslint-disable-next-line no-unsafe-optional-chaining
+  const historyProps = [...ticket?.data?.history, ...ticket.data.views].map(
     (h) => {
       return {
         type: "history",
@@ -320,7 +335,6 @@ const activities = computed(() => {
   const sorted = [...emailProps, ...commentProps, ...historyProps].sort(
     (a, b) => new Date(a.creation) - new Date(b.creation)
   );
-
   const data = [];
   let i = 0;
 
@@ -346,13 +360,12 @@ const activities = computed(() => {
   return data;
 });
 
-function filterActivities(eventType: TicketTab) {
+function filterActivities(eventType: string) {
   if (eventType === "activity") {
     return activities.value;
   }
   return activities.value.filter((activity) => activity.type === eventType);
 }
-
 function updateTicket(fieldname: string, value: string) {
   isLoading.value = true;
   createResource({
@@ -391,16 +404,16 @@ function updateTicket(fieldname: string, value: string) {
 
 onMounted(() => {
   document.title = props.ticketId;
-  socket.on("helpdesk:ticket-update", (ticketID) => {
-    if (ticketID === Number(props.ticketId)) {
-      ticket.reload();
-    }
-  });
+  // socket.on("helpdesk:ticket-update", (ticketID) => {
+  //   if (ticketID === Number(props.ticketId)) {
+  //     ticket.reload();
+  //   }
+  // });
 });
 
 onUnmounted(() => {
   document.title = "Helpdesk";
-  socket.off("helpdesk:ticket-update");
+  // socket.off("helpdesk:ticket-update");
 });
 </script>
 

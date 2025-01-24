@@ -153,9 +153,16 @@ const profileSettings = computed(() => {
     : agentPortalDropdown.value;
 });
 
+const logMessage = {
+  Team: "Teams",
+  TicketAgent: "TicketsAgent",
+  DeskKBCategory: "DeskKBHome",
+  DeskKBSubcategory: "DeskKBHome",
+  DeskKBArticle: "DeskKBHome",
+};
+
 function isActiveTab(to: string) {
-  console.log(route.name, to);
-  return route.name === to;
+  return route.name === to || logMessage[route.name] === to;
 }
 
 function openCommandPalette() {

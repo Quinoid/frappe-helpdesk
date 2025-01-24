@@ -24,6 +24,7 @@
       :resolution-by="ticket.resolution_by"
       :ticket-created-on="ticket.creation"
       :source="ticket.via_customer_portal ? 'Portal' : 'Mail'"
+      :description="ticket.description"
     />
     <!-- fields -->
     <TicketAgentFields :ticket="ticket" @update="update" />

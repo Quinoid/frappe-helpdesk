@@ -9,7 +9,9 @@
         <div class="w-[126px] text-sm text-gray-600">{{ s.label }}</div>
       </Tooltip>
       <div class="flex items-center justify-between">
-        <div v-if="s.value">{{ s.value }}</div>
+        <div v-if="s.label === 'Description'" v-html="s.value"></div>
+        <div v-else-if="s.value">{{ s.value }}</div>
+        
         <Tooltip :text="s.tooltipValue">
           <Badge
             v-if="s.badgeText"
@@ -25,10 +27,9 @@
 </template>
 
 <script setup lang="ts">
-import { Badge, Tooltip } from "frappe-ui";
 import { dayjs } from "@/dayjs";
-import { formatTime } from "@/utils";
-import { dateFormat, dateTooltipFormat } from "@/utils";
+import { dateFormat, dateTooltipFormat, formatTime } from "@/utils";
+import { Badge, Tooltip } from "frappe-ui";
 import { computed } from "vue";
 
 const props = defineProps({
@@ -57,6 +58,10 @@ const props = defineProps({
     required: true,
   },
   source: {
+    type: String,
+    required: true,
+  },
+  description: {
     type: String,
     required: true,
   },
@@ -129,9 +134,11 @@ const sections = computed(() => [
     badgeText: resolutionBadge.value.label,
     badgeColor: resolutionBadge.value.color,
   },
+
   {
     label: "Source",
     value: props.source,
   },
+  { label: "Description", value: props.description },
 ]);
 </script>
